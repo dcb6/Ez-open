@@ -2,13 +2,6 @@ import sys
 import webbrowser
 from subprocess import call
 
-# call(['open', '/Users/danielburke/Documents/gyro_free_baby.csv'])
-# sites = {'main':['https://canvas.rice.edu/courses/1229/pages/homework-4'],
-#          '1':['https://canvas.rice.edu/courses/1229/assignments/13913','https://www.overleaf.com/8394720zfdrxrqdbphm#/29766093/'],
-#          '2':['https://canvas.rice.edu/courses/1229/assignments/13914','https://www.overleaf.com/8394759dstsmcgngpfv'],
-#          '3':['https://canvas.rice.edu/courses/1229/assignments/13915','https://www.overleaf.com/8394761qdxzyvnympqn#/29766224/']
-#         }
-
 def read_var(filename):
     with open(filename) as f:
         g = eval(f.read())
@@ -27,6 +20,8 @@ def ask_yes_no(question):
         elif response == 'y':
             said_yes = True
             break
+        elif response == 'exit':
+            sys.exit()
         else:
             print "Couldn't recognize that one! Type 'y' or 'n' (no quotes)."
     return said_yes
@@ -34,40 +29,41 @@ def ask_yes_no(question):
 sites = {}
 files = {}
 
+# list available keywords
 if 'options' in sys.argv:
     sites = read_var('sites')
+    keywords = set([])
     for keyword in sites:
-        print keyword
+        keywords.add(keyword)
 
 # SETUP MODE
 elif 'setup' in sys.argv:
     first_time = False
     if 'firsttime' in sys.argv:
         first_time = True
-    print ''
-    print '----------------------------------------------------'
-    print 'Setup engaged!'
-    print ''
+    print '\n----------------------------------------------------'
+    print 'Setup engaged!\n'
 
     more_keywords = True
+
+    # loop while user still has keywords to create
     while more_keywords:
         if first_time:
-            print '**Enter the keyword that you will use to open certain files and websites.**'
-            print ''
+            print '**Enter the keyword that you will use to open certain files and websites.**\n'
 
         keyword = raw_input('Keyword: ')
+        if keyword == 'exit':
+            sys.exit()
+
         sites[keyword] = set([])
         files[keyword] = set([])
 
         # get websites
-        print '----------------------------------------------------'
-        print ''
+        print '----------------------------------------------------\n'
         print '-- Website entry --'
 
         if first_time:
-            print ''
-            print '**In this section, you enter all of the websites that you want typing "', keyword, '" to cause to open, one at a time.**'
-            print ''
+            print '\n**In this section, you enter all of the websites that you want typing "', keyword, '" to cause to open, one at a time.**\n'
 
         while True:
             # check if they want to add a website
@@ -83,11 +79,8 @@ elif 'setup' in sys.argv:
         print ''
         print '-- File entry --'
         if first_time:
-            print ''
-            print '**In this section, you enter all of the files that you want typing "', keyword, '" to cause to open, one at a time.**'
-            print ''
-        print '*TIP* Drag and drop files into Terminal window to quickly add path.'
-        print ''
+            print '\n**In this section, you enter all of the files that you want typing "', keyword, '" to cause to open, one at a time.**\n'
+        print '*TIP* Drag and drop files into Terminal window to quickly add path.\n'
         while True:
             if not ask_yes_no('Add a file? (y/n): '):
                 break
@@ -95,28 +88,28 @@ elif 'setup' in sys.argv:
             print ''
             files[keyword].add(path.strip())
 
-        print '----------------------------------------------------'
-        print ''
-        print 'Keyword complete!'
-        print ''
-        more_keywords = ask_yes_no('Create another keyword? (y,n): ')
-        print ''
+        print '----------------------------------------------------\n'
 
-    print 'Setup complete!'
-    print ''
+        print 'Keyword complete!\n'
+        more_keywords = ask_yes_no('Create another keyword? (y,n): \n')
 
-    if first_time:
-        print "You're ready to use ezopen! Once you're in the correct directory in Terminal, type the following:"
-        print ''
-        print 'python ezopen.py "keyword"'
-        print ''
-        print '...where "keyword" is the desired keyword (without quotes).'
-        print ''
+    if ask_yes_no('\nSave setup? This will override any previous setups. (y/n) :'):
+        # write these dictionaries so they can we used again
+        write_var(sites, 'sites')
+        write_var(files, 'files')
+
+        print 'Setup complete!\n'
 
 
-    # write these dictionaries so they can we used again
-    write_var(sites, 'sites')
-    write_var(files, 'files')
+        if first_time:
+            print "You're ready to use ezopen! Once you're in the correct directory in Terminal, type the following:\n"
+            print 'python ezopen.py "keyword"\n'
+            print '...where "keyword" is the desired keyword (without quotes).\n'
+    else:
+        print '\n----------------------------------------------------'
+        print '\nSetup complete, no changes saved.\n'
+
+
 
 # EDIT MODE
 # elif 'edit' in sys.argv:
@@ -142,4 +135,4 @@ else:
             if keyword in sys.argv:
                 for file_path in files[keyword]:
                     if call(['open', file_path]) == 1:
-                        print 'Make sure file paths have no spaces and are correct. May require name changes to directory and/or file name.'
+                        print 'Make sure file path is correct.'
