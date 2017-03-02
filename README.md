@@ -9,14 +9,14 @@ With ez-open, you can assign groupings of files and websites, and open any numbe
 
 ### Example:
 
-I want to work on problems 2 and 3 of my COMP 182 assignment and open up the main problem page. After quickly setting up ezopen, I type
+I want to work on problems 2 and 3 of my COMP 182 assignment and open up the main problem page. I simply type:
 
 `python ezopen.py 2 3 main`
 
 And this opens up the appropriate Overleaf, assignment webpages, and pdfs for these problems.
 
 ## Usage
-The first time running ez-open, type
+The first time running ez-open, type:
 
 `python ezopen.py setup firsttime`
 
